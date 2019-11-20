@@ -436,10 +436,14 @@ class Agent(models.Model):
 
     @api.multi
     def _get_last_state_human(self):
+        global HUMANIZE
         if HUMANIZE:
-            to_translate = self.env.context.get('lang', 'en_US')
-            if to_translate != 'en_US':
-                humanize.i18n.activate(to_translate)
+            try:
+                to_translate = self.env.context.get('lang', 'en_US')
+                if to_translate != 'en_US':
+                    humanize.i18n.activate(to_translate)
+            except:
+                HUMANIZE = False
         for rec in self:
             last_state = self.env['remote_agent.agent_state'].search([
                 ('agent', '=', rec.id)], limit=1, order='id desc')
